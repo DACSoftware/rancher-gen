@@ -1,11 +1,14 @@
 {
   "devDependencies": {
-    "npm": "^5.0.3",
-    "typescript": "^2.3.4",
     "@types/node": "^7.0.31",
     "@types/request": "0.0.44",
     "@types/websocket": "0.0.33",
-    "@types/ws": "^3.0.0"
+    "@types/ws": "^3.0.0",
+    "npm": "^5.0.3",
+    "ts-loader": "^2.1.0",
+    "typescript": "^2.3.4",
+    "webpack": "^2.6.1",
+    "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
     "ejs": "^2.5.6",

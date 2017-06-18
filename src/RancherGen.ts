@@ -68,7 +68,7 @@ export default class RancherGen
                 })
             })
             .catch((error) => {
-                console.log(error)
+                console.log(error);
                 throw error;
             });
     }

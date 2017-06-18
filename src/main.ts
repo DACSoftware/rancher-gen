@@ -1,14 +1,14 @@
-
 import * as request from "request";
+import * as WebSocket from "ws";
 
 import RancherGen from "./RancherGen";
 import Listener from "./Listener";
 import Client from "./Client";
-import * as WebSocket from "ws";
 import Builder from "./Builder";
 import BuildTaskFactory from "./BuildTaskFactory";
 
-var config = require(process.argv[2]);
+//dirty hack to expose regular require() in webpacked app
+var config = eval("require")(process.argv[2]);
 
 var rancherUrl = config.rancherHost;
 var rancherAuthenticationToken = config.rancherAuthenticationToken;
