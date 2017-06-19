@@ -11,7 +11,7 @@ export default class Ejs implements Template
         let ejs = require("ejs");
         let sourceFile = definition.source;
         let source = fs.readFileSync(sourceFile).toString("utf8");
-        this.template = ejs.compile(source);
+        this.template = ejs.compile(source, {filename: definition.source});
     }
 
     render(data: any): string

@@ -392,7 +392,9 @@ class BuildTask {
             this.lastBuiltContent = newContent;
             fs.writeFileSync(this.target, newContent, "utf8");
             if (this.command !== null) {
+                console.log("Running command: " + this.command);
                 childProcess.execSync(this.command, { stdio: [0, 1, 2] });
+                console.log("Finished command: " + this.command);
             }
             console.log("Target file " + this.target + " written");
         }
@@ -446,7 +448,7 @@ class Ejs {
         let ejs = __webpack_require__(/*! ejs */ 13);
         let sourceFile = definition.source;
         let source = fs.readFileSync(sourceFile).toString("utf8");
-        this.template = ejs.compile(source);
+        this.template = ejs.compile(source, { filename: definition.source });
     }
     render(data) {
         return this.template(data);

@@ -34,7 +34,9 @@ export default class BuildTask
             );
 
             if (this.command !== null) {
+                console.log("Running command: " + this.command);
                 childProcess.execSync(this.command, {stdio:[0,1,2]});
+                console.log("Finished command: " + this.command);
             }
 
             console.log("Target file " + this.target + " written");
