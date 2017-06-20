@@ -27,7 +27,6 @@ export default class RancherGen
 
     start()
     {
-        this.build();
         this.determineProjectId().then((projectId) => {
             this.listener.watch(this.projectId, ["resource.change"], () =>
             {
@@ -36,7 +35,7 @@ export default class RancherGen
         });
     }
 
-    private build()
+    build()
     {
         let now = (new Date()).getTime();
         let sinceLastBuild = now - this.lastBuild;

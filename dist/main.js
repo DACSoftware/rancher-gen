@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -89,9 +89,9 @@ module.exports = require("fs");
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const BuildTask_1 = __webpack_require__(/*! ./BuildTask */ 8);
-const Ejs_1 = __webpack_require__(/*! ./Template/Ejs */ 10);
-const Callback_1 = __webpack_require__(/*! ./Template/Callback */ 9);
+const BuildTask_1 = __webpack_require__(/*! ./BuildTask */ 9);
+const Ejs_1 = __webpack_require__(/*! ./Template/Ejs */ 11);
+const Callback_1 = __webpack_require__(/*! ./Template/Callback */ 10);
 class BuildTaskFactory {
     taskFromDefinition(definition) {
         let template = null;
@@ -286,7 +286,6 @@ class RancherGen {
         this.queuedBuild = null;
     }
     start() {
-        this.build();
         this.determineProjectId().then((projectId) => {
             this.listener.watch(this.projectId, ["resource.change"], () => {
                 this.build();
@@ -347,6 +346,17 @@ exports.default = RancherGen;
 /* 6 */
 /* no static exports found */
 /* all exports used */
+/*!*************************!*\
+  !*** external "nomnom" ***!
+  \*************************/
+/***/ (function(module, exports) {
+
+module.exports = require("nomnom");
+
+/***/ }),
+/* 7 */
+/* no static exports found */
+/* all exports used */
 /*!**************************!*\
   !*** external "request" ***!
   \**************************/
@@ -355,7 +365,7 @@ exports.default = RancherGen;
 module.exports = require("request");
 
 /***/ }),
-/* 7 */
+/* 8 */
 /* no static exports found */
 /* all exports used */
 /*!*********************!*\
@@ -366,7 +376,7 @@ module.exports = require("request");
 module.exports = require("ws");
 
 /***/ }),
-/* 8 */
+/* 9 */
 /* no static exports found */
 /* all exports used */
 /*!**************************!*\
@@ -378,7 +388,7 @@ module.exports = require("ws");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __webpack_require__(/*! fs */ 0);
-const childProcess = __webpack_require__(/*! child_process */ 12);
+const childProcess = __webpack_require__(/*! child_process */ 13);
 class BuildTask {
     constructor(template, target, command) {
         this.template = template;
@@ -407,7 +417,7 @@ exports.default = BuildTask;
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /* no static exports found */
 /* all exports used */
 /*!**********************************!*\
@@ -430,7 +440,7 @@ exports.default = Callback;
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /* no static exports found */
 /* all exports used */
 /*!*****************************!*\
@@ -445,7 +455,7 @@ const fs = __webpack_require__(/*! fs */ 0);
 class Ejs {
     constructor(definition) {
         this.template = null;
-        let ejs = __webpack_require__(/*! ejs */ 13);
+        let ejs = __webpack_require__(/*! ejs */ 14);
         let sourceFile = definition.source;
         let source = fs.readFileSync(sourceFile).toString("utf8");
         this.template = ejs.compile(source, { filename: definition.source });
@@ -458,7 +468,7 @@ exports.default = Ejs;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /* no static exports found */
 /* all exports used */
 /*!*********************!*\
@@ -469,15 +479,23 @@ exports.default = Ejs;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const request = __webpack_require__(/*! request */ 6);
-const WebSocket = __webpack_require__(/*! ws */ 7);
+const request = __webpack_require__(/*! request */ 7);
+const WebSocket = __webpack_require__(/*! ws */ 8);
 const RancherGen_1 = __webpack_require__(/*! ./RancherGen */ 5);
 const Listener_1 = __webpack_require__(/*! ./Listener */ 4);
 const Client_1 = __webpack_require__(/*! ./Client */ 3);
 const Builder_1 = __webpack_require__(/*! ./Builder */ 2);
 const BuildTaskFactory_1 = __webpack_require__(/*! ./BuildTaskFactory */ 1);
+var nomnom = __webpack_require__(/*! nomnom */ 6);
+var argv = nomnom
+    .option('one-shot', {
+    abbr: '1',
+    flag: true,
+    help: 'Build templates one time. No listen.'
+})
+    .parse();
 //dirty hack to expose regular require() in webpacked app
-var config = eval("require")(process.argv[2]);
+var config = eval("require")(argv._[0]);
 var rancherUrl = config.rancherHost;
 var rancherAuthenticationToken = config.rancherAuthenticationToken;
 var minInterval = config.minInterval || 10000;
@@ -488,11 +506,14 @@ var factory = new BuildTaskFactory_1.default();
 var tasks = factory.tasksFromDefinitions(config.templates);
 var builder = new Builder_1.default(tasks);
 var rancherGen = new RancherGen_1.default(listener, client, builder, minInterval, projectId);
-rancherGen.start();
+rancherGen.build();
+if (!argv['one-shot']) {
+    rancherGen.start();
+}
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /* no static exports found */
 /* all exports used */
 /*!********************************!*\
@@ -503,7 +524,7 @@ rancherGen.start();
 module.exports = require("child_process");
 
 /***/ }),
-/* 13 */
+/* 14 */
 /* no static exports found */
 /* all exports used */
 /*!**********************!*\

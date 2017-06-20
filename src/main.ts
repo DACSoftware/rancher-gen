@@ -7,8 +7,18 @@ import Client from "./Client";
 import Builder from "./Builder";
 import BuildTaskFactory from "./BuildTaskFactory";
 
+var nomnom = require("nomnom");
+
+var argv = nomnom
+    .option('one-shot', {
+        abbr: '1',
+        flag: true,
+        help: 'Build templates one time. No listen.'
+    })
+    .parse();
+
 //dirty hack to expose regular require() in webpacked app
-var config = eval("require")(process.argv[2]);
+var config = eval("require")(argv._[0]);
 
 var rancherUrl = config.rancherHost;
 var rancherAuthenticationToken = config.rancherAuthenticationToken;
@@ -43,4 +53,8 @@ var rancherGen = new RancherGen(
     projectId
 );
 
-rancherGen.start();
+rancherGen.build();
+
+if (!argv['one-shot']) {
+    rancherGen.start();
+}
