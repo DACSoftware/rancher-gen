@@ -63,6 +63,7 @@ export default class RancherGen
         this.client.getListContainers()
             .then((containers) => {
                 this.builder.build({
+                    "definition": null,
                     "containers": containers
                 })
             })

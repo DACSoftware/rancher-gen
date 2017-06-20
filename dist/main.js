@@ -318,6 +318,7 @@ class RancherGen {
         this.client.getListContainers()
             .then((containers) => {
             this.builder.build({
+                "definition": null,
                 "containers": containers
             });
         })
@@ -430,9 +431,11 @@ exports.default = BuildTask;
 Object.defineProperty(exports, "__esModule", { value: true });
 class Callback {
     constructor(definition) {
+        this.definition = definition;
         this.callbackFunction = definition.function;
     }
     render(data) {
+        data.definition = this.definition;
         return this.callbackFunction(data);
     }
 }
@@ -459,8 +462,10 @@ class Ejs {
         let sourceFile = definition.source;
         let source = fs.readFileSync(sourceFile).toString("utf8");
         this.template = ejs.compile(source, { filename: definition.source });
+        this.definition = definition;
     }
     render(data) {
+        data.definition = this.definition;
         return this.template(data);
     }
 }
