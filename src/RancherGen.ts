@@ -92,7 +92,9 @@ export default class RancherGen
                 resolve(this.projectId);
             } else {
                 this.client.getCurrentContainer().then((container) => {
-                    resolve(container.accountId);
+                    this.client.getProjectByUuid(container.environment_uuid).then((project) => {
+                        resolve(project.id);
+                    })
                 })
             }
         });

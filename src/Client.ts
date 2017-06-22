@@ -23,6 +23,14 @@ export default class Client
         return this.performGet(url)
     }
 
+    getProjectByUuid(uuid: string): Promise<any>
+    {
+        let url = "http://" + this.rancherUrl + "/v1/projects?uuid=" + uuid;
+        return this.performGet(url).then((projects) => {
+            return projects.data[0] || null;
+        });
+    }
+
     private performGet(url: string): Promise<any>
     {
         let options: any = {

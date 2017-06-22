@@ -174,6 +174,12 @@ class Client {
         let url = "http://rancher-metadata/2015-07-25/self/container";
         return this.performGet(url);
     }
+    getProjectByUuid(uuid) {
+        let url = "http://" + this.rancherUrl + "/v1/projects?uuid=" + uuid;
+        return this.performGet(url).then((projects) => {
+            return projects[0] || null;
+        });
+    }
     performGet(url) {
         let options = {
             url: url,
@@ -342,7 +348,9 @@ class RancherGen {
             }
             else {
                 this.client.getCurrentContainer().then((container) => {
-                    resolve(container.accountId);
+                    this.client.getProjectByUuid(container.environment_uuid).then((project) => {
+                        resolve(project.id);
+                    });
                 });
             }
         });
