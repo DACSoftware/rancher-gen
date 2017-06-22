@@ -177,7 +177,7 @@ class Client {
     getProjectByUuid(uuid) {
         let url = "http://" + this.rancherUrl + "/v1/projects?uuid=" + uuid;
         return this.performGet(url).then((projects) => {
-            return projects[0] || null;
+            return projects.data[0] || null;
         });
     }
     performGet(url) {
