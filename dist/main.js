@@ -287,7 +287,7 @@ class RancherGen {
     }
     start() {
         this.determineProjectId().then((projectId) => {
-            this.listener.watch(this.projectId, ["resource.change"], () => {
+            this.listener.watch(projectId, ["resource.change"], () => {
                 this.build();
             });
         });
@@ -315,11 +315,19 @@ class RancherGen {
     }
     doBuild() {
         this.lastBuild = (new Date()).getTime();
-        this.client.getListContainers()
-            .then((containers) => {
-            this.builder.build({
-                "definition": null,
-                "containers": containers
+        this.client.getCurrentContainer()
+            .then((currentContainer) => {
+            this.client.getListContainers()
+                .then((containers) => {
+                this.builder.build({
+                    "definition": null,
+                    "containers": containers,
+                    "current": currentContainer
+                });
+            })
+                .catch((error) => {
+                console.log(error);
+                throw error;
             });
         })
             .catch((error) => {
@@ -334,7 +342,7 @@ class RancherGen {
             }
             else {
                 this.client.getCurrentContainer().then((container) => {
-                    resolve(container.data.accountId);
+                    resolve(container.accountId);
                 });
             }
         });
