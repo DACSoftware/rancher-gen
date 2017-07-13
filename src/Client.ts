@@ -13,7 +13,7 @@ export default class Client
 
     getListContainers(): Promise<any>
     {
-        let url = "http://" + this.rancherUrl + "/v1/containers";
+        let url = "http://" + this.rancherUrl + "/v1/containers?limit=1000";
         return this.performGet(url)
     }
 
