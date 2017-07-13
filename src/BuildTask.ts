@@ -23,8 +23,11 @@ export default class BuildTask
     build(data: any)
     {
         let newContent = this.template.render(data);
-        if (newContent != this.lastBuiltContent) {
-
+        if (newContent === null) {
+            console.log("Target file " + this.target + " untouched - no new content");
+        } else if (newContent == this.lastBuiltContent) {
+            console.log("Target file " + this.target + " untouched - same content");
+        } else {
             this.lastBuiltContent = newContent;
 
             fs.writeFileSync(
@@ -40,8 +43,6 @@ export default class BuildTask
             }
 
             console.log("Target file " + this.target + " written");
-        } else {
-            console.log("Target file " + this.target + " untouched - same content");
         }
     }
 }
