@@ -15,8 +15,10 @@ export default class Client
 
     getListContainers(): Promise<any>
     {
-        let url = this.rancherUrl + "/containers?limit=1000";
-        return this.performGet(url)
+        let url = this.rancherUrl + "/containers";
+        return new Promise((resolve, reject) => {
+            this.recursiveGetContainers([], url, resolve);
+        })
     }
 
     getCurrentContainer(): Promise<any>
@@ -36,6 +38,18 @@ export default class Client
         let url = "http://" + this.rancherUrl + "/v1/projects?uuid=" + uuid;
         return this.performGet(url).then((projects) => {
             return projects.data[0] || null;
+        });
+    }
+
+    private recursiveGetContainers(list: any[], url: string, finalResolve: Function)
+    {
+        this.performGet(url).then((response) => {
+            list = list.concat(response.data);
+            if (response.pagination.next) {
+                this.recursiveGetContainers(list, response.pagination.next, finalResolve);
+            } else {
+                finalResolve(list);
+            }
         });
     }
 
