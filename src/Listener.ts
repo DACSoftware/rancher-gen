@@ -18,7 +18,7 @@ export default class Listener
             ? this.authenticationToken + "@"
             : "";
         let eventList = events.join(",");
-        let url = "ws://" + authPrefix + this.rancherUrl + "/v1/projects/" + projectId + "/subscribe?eventNames=" + eventList;
+        let url = this.rancherUrl.replace(/^https?:\/\//, "ws://" + authPrefix) + "/projects/" + projectId + "/subscribe?eventNames=" + eventList;
         let socket = new this.websocket(url);
 
         socket.on('open', () => {

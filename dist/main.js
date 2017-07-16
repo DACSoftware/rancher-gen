@@ -161,19 +161,19 @@ exports.default = Builder;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 class Client {
-    constructor(request, rancherUrl, useRancherMetadata = true, authenticationToken = null) {
+    constructor(request, rancherUrl, rancherMetadataUrl, authenticationToken = null) {
         this.rancherUrl = rancherUrl;
+        this.rancherMetadataUrl = rancherMetadataUrl;
         this.authenticationToken = authenticationToken;
         this.http = request;
-        this.useRancherMetadata = useRancherMetadata;
     }
     getListContainers() {
-        let url = "http://" + this.rancherUrl + "/v1/containers?limit=1000";
+        let url = this.rancherUrl + "/containers?limit=1000";
         return this.performGet(url);
     }
     getCurrentContainer() {
-        if (this.useRancherMetadata) {
-            let url = "http://rancher-metadata/2015-07-25/self/container";
+        if (this.rancherMetadataUrl !== null) {
+            let url = this.rancherMetadataUrl + "/self/container";
             return this.performGet(url);
         }
         else {
@@ -253,7 +253,7 @@ class Listener {
             ? this.authenticationToken + "@"
             : "";
         let eventList = events.join(",");
-        let url = "ws://" + authPrefix + this.rancherUrl + "/v1/projects/" + projectId + "/subscribe?eventNames=" + eventList;
+        let url = this.rancherUrl.replace(/^https?:\/\//, "ws://" + authPrefix) + "/projects/" + projectId + "/subscribe?eventNames=" + eventList;
         let socket = new this.websocket(url);
         socket.on('open', () => {
             console.log('Socket opened');
@@ -534,11 +534,13 @@ var argv = nomnom
     .parse();
 //dirty hack to expose regular require() in webpacked app
 var config = eval("require")(argv._[0]);
-var rancherUrl = config.rancherHost;
-var rancherAuthenticationToken = config.rancherAuthenticationToken;
+var rancherUrl = config.cattleUrl;
+var rancherAuthenticationToken = config.cattleAccessKey !== null && config.cattleSecretKey !== null
+    ? config.cattleAccessKey + ":" + config.cattleSecretKey
+    : null;
 var minInterval = config.minInterval || 10000;
 var projectId = config.projectId || null;
-var client = new Client_1.default(request, rancherUrl, argv['rancher-metadata'], rancherAuthenticationToken);
+var client = new Client_1.default(request, rancherUrl, argv['rancher-metadata'] ? "http://rancher-metadata/2015-07-25" : null, rancherAuthenticationToken);
 var listener = new Listener_1.default(WebSocket, rancherUrl, rancherAuthenticationToken);
 var factory = new BuildTaskFactory_1.default();
 var tasks = factory.tasksFromDefinitions(config.templates);

@@ -1,6 +1,7 @@
 module.exports = {
-    "rancherHost": process.env.RANCHER_HOST || "10.0.2.200:8181",
-    "rancherAuthenticationToken": process.env.RANCHER_TOKEN || "54748DD885D041D8D457:w3T8mr1U1txkvHXLiWqb3Bkd8F4BcnvEEb3gvpU4",
+    "cattleUrl": process.env.CATTLE_URL || "http://10.0.2.200:8181/v1",
+    "cattleAccessKey": process.env.CATTLE_ACCESS_KEY || "BF8123E661C6278ED8FE",
+    "cattleSecretKey": process.env.CATTLE_SECRET_KEY || "mAq2XmZA9LkLBs14MiwzAKPEWrAgFfuoRhp6dx8d",
     "projectId": "1a5",
     "templates": [
         {

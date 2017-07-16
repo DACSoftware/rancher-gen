@@ -1,28 +1,28 @@
 export default class Client
 {
     private rancherUrl: string;
+    private rancherMetadataUrl: string;
     private authenticationToken: string;
     private http;
-    private useRancherMetadata: boolean;
 
-    constructor(request: any, rancherUrl: string, useRancherMetadata: boolean = true, authenticationToken: string = null)
+    constructor(request: any, rancherUrl: string, rancherMetadataUrl: string, authenticationToken: string = null)
     {
         this.rancherUrl = rancherUrl;
+        this.rancherMetadataUrl = rancherMetadataUrl;
         this.authenticationToken = authenticationToken;
         this.http = request;
-        this.useRancherMetadata = useRancherMetadata;
     }
 
     getListContainers(): Promise<any>
     {
-        let url = "http://" + this.rancherUrl + "/v1/containers?limit=1000";
+        let url = this.rancherUrl + "/containers?limit=1000";
         return this.performGet(url)
     }
 
     getCurrentContainer(): Promise<any>
     {
-        if (this.useRancherMetadata) {
-            let url = "http://rancher-metadata/2015-07-25/self/container";
+        if (this.rancherMetadataUrl !== null) {
+            let url = this.rancherMetadataUrl + "/self/container";
             return this.performGet(url)
         } else {
             return new Promise((resolve, reject) => {

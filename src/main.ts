@@ -26,15 +26,17 @@ var argv = nomnom
 //dirty hack to expose regular require() in webpacked app
 var config = eval("require")(argv._[0]);
 
-var rancherUrl = config.rancherHost;
-var rancherAuthenticationToken = config.rancherAuthenticationToken;
+var rancherUrl = config.cattleUrl;
+var rancherAuthenticationToken = config.cattleAccessKey !== null && config.cattleSecretKey !== null
+    ? config.cattleAccessKey + ":" + config.cattleSecretKey
+    : null;
 var minInterval = config.minInterval || 10000;
 var projectId = config.projectId || null;
 
 var client = new Client(
     request,
     rancherUrl,
-    argv['rancher-metadata'],
+    argv['rancher-metadata'] ? "http://rancher-metadata/2015-07-25" : null,
     rancherAuthenticationToken
 );
 
