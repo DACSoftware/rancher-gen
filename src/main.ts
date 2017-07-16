@@ -15,6 +15,12 @@ var argv = nomnom
         flag: true,
         help: 'Build templates one time. No listen.'
     })
+    .option('rancher-metadata', {
+        abbr: '1',
+        flag: true,
+        default: true,
+        help: 'Does not connect to rancher-metadata. Use when running outside Rancher container.'
+    })
     .parse();
 
 //dirty hack to expose regular require() in webpacked app
@@ -28,6 +34,7 @@ var projectId = config.projectId || null;
 var client = new Client(
     request,
     rancherUrl,
+    argv['rancher-metadata'],
     rancherAuthenticationToken
 );
 

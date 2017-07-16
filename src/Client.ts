@@ -3,12 +3,14 @@ export default class Client
     private rancherUrl: string;
     private authenticationToken: string;
     private http;
+    private useRancherMetadata: boolean;
 
-    constructor(request: any, rancherUrl: string, authenticationToken: string = null)
+    constructor(request: any, rancherUrl: string, useRancherMetadata: boolean = true, authenticationToken: string = null)
     {
         this.rancherUrl = rancherUrl;
         this.authenticationToken = authenticationToken;
         this.http = request;
+        this.useRancherMetadata = useRancherMetadata;
     }
 
     getListContainers(): Promise<any>
@@ -19,8 +21,14 @@ export default class Client
 
     getCurrentContainer(): Promise<any>
     {
-        let url = "http://rancher-metadata/2015-07-25/self/container";
-        return this.performGet(url)
+        if (this.useRancherMetadata) {
+            let url = "http://rancher-metadata/2015-07-25/self/container";
+            return this.performGet(url)
+        } else {
+            return new Promise((resolve, reject) => {
+                resolve(null);
+            });
+        }
     }
 
     getProjectByUuid(uuid: string): Promise<any>

@@ -161,18 +161,26 @@ exports.default = Builder;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 class Client {
-    constructor(request, rancherUrl, authenticationToken = null) {
+    constructor(request, rancherUrl, useRancherMetadata = true, authenticationToken = null) {
         this.rancherUrl = rancherUrl;
         this.authenticationToken = authenticationToken;
         this.http = request;
+        this.useRancherMetadata = useRancherMetadata;
     }
     getListContainers() {
-        let url = "http://" + this.rancherUrl + "/v1/containers";
+        let url = "http://" + this.rancherUrl + "/v1/containers?limit=1000";
         return this.performGet(url);
     }
     getCurrentContainer() {
-        let url = "http://rancher-metadata/2015-07-25/self/container";
-        return this.performGet(url);
+        if (this.useRancherMetadata) {
+            let url = "http://rancher-metadata/2015-07-25/self/container";
+            return this.performGet(url);
+        }
+        else {
+            return new Promise((resolve, reject) => {
+                resolve(null);
+            });
+        }
     }
     getProjectByUuid(uuid) {
         let url = "http://" + this.rancherUrl + "/v1/projects?uuid=" + uuid;
@@ -415,7 +423,13 @@ class BuildTask {
     }
     build(data) {
         let newContent = this.template.render(data);
-        if (newContent != this.lastBuiltContent) {
+        if (newContent === null) {
+            console.log("Target file " + this.target + " untouched - no new content");
+        }
+        else if (newContent == this.lastBuiltContent) {
+            console.log("Target file " + this.target + " untouched - same content");
+        }
+        else {
             this.lastBuiltContent = newContent;
             fs.writeFileSync(this.target, newContent, "utf8");
             if (this.command !== null) {
@@ -424,9 +438,6 @@ class BuildTask {
                 console.log("Finished command: " + this.command);
             }
             console.log("Target file " + this.target + " written");
-        }
-        else {
-            console.log("Target file " + this.target + " untouched - same content");
         }
     }
 }
@@ -514,6 +525,12 @@ var argv = nomnom
     flag: true,
     help: 'Build templates one time. No listen.'
 })
+    .option('rancher-metadata', {
+    abbr: '1',
+    flag: true,
+    default: true,
+    help: 'Does not connect to rancher-metadata. Use when running outside Rancher container.'
+})
     .parse();
 //dirty hack to expose regular require() in webpacked app
 var config = eval("require")(argv._[0]);
@@ -521,7 +538,7 @@ var rancherUrl = config.rancherHost;
 var rancherAuthenticationToken = config.rancherAuthenticationToken;
 var minInterval = config.minInterval || 10000;
 var projectId = config.projectId || null;
-var client = new Client_1.default(request, rancherUrl, rancherAuthenticationToken);
+var client = new Client_1.default(request, rancherUrl, argv['rancher-metadata'], rancherAuthenticationToken);
 var listener = new Listener_1.default(WebSocket, rancherUrl, rancherAuthenticationToken);
 var factory = new BuildTaskFactory_1.default();
 var tasks = factory.tasksFromDefinitions(config.templates);
