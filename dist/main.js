@@ -257,6 +257,7 @@ exports.default = Client;
 Object.defineProperty(exports, "__esModule", { value: true });
 class Listener {
     constructor(websocket, rancherUrl, authenticationToken = null) {
+        this.reconnectTimeout = 5000;
         this.rancherUrl = rancherUrl;
         this.authenticationToken = authenticationToken;
         this.websocket = websocket;
@@ -270,6 +271,10 @@ class Listener {
         let socket = new this.websocket(url);
         socket.on('open', () => {
             console.log('Socket opened');
+        });
+        socket.on('close', () => {
+            console.log('Socket closed');
+            this.queueReconnect(projectId, events, callback);
         });
         socket.on('error', (error) => {
             console.log('Socket errored');
@@ -285,6 +290,13 @@ class Listener {
                 callback(message);
             }
         });
+    }
+    queueReconnect(projectId, events, callback) {
+        console.log("Will reconnect socket in " + this.reconnectTimeout + "ms");
+        setTimeout(() => {
+            console.log("Reconnecting socket");
+            this.watch(projectId, events, callback);
+        }, this.reconnectTimeout);
     }
 }
 exports.default = Listener;
