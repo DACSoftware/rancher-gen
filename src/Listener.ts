@@ -5,6 +5,8 @@ export default class Listener
 
     private websocket: any;
 
+    private reconnectTimeout: number = 5000;
+
     constructor(websocket: any, rancherUrl: string, authenticationToken: string = null)
     {
         this.rancherUrl = rancherUrl;
@@ -25,6 +27,11 @@ export default class Listener
             console.log('Socket opened');
         });
 
+        socket.on('close', () => {
+            console.log('Socket closed');
+            this.queueReconnect(projectId, events, callback);
+        });
+
         socket.on('error', (error) => {
             console.log('Socket errored');
             console.error(error);
@@ -39,5 +46,17 @@ export default class Listener
                 callback(message);
             }
         });
+    }
+
+    private queueReconnect(projectId: string, events: string[], callback: Function)
+    {
+        console.log("Will reconnect socket in " + this.reconnectTimeout + "ms");
+        setTimeout(
+            () => {
+                console.log("Reconnecting socket");
+                this.watch(projectId, events, callback)
+            },
+            this.reconnectTimeout
+        );
     }
 }
