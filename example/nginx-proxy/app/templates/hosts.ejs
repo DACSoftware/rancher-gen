@@ -1,0 +1,12 @@
+<%
+  const vhost_label = 'com.latanowicz.proxy.virtual_host';
+  containers
+    .filter((c) => !!c.labels[vhost_label])        //extract containers with vhost labels
+    .map((c) => c.labels[vhost_label].split(','))  //extract vhost names
+    .reduce((vhosts, a) => a.concat(vhosts), [])   //flatten array
+    .filter((v, i, a) => a.indexOf(v) === i)       //only unique values
+    .forEach((vhost) => { %>
+
+    <%- include('service-http.ejs', {containers: containers, vhost: vhost, current: current}); %>
+
+<% }); %>

@@ -1,0 +1,37 @@
+<%
+var localUpstreamCount = containers
+        .filter((container) =>
+            container.data
+            && container.data.fields
+            && container.data.fields.hostId
+            && current.labels['io.rancher.service.requested.host.id']
+            && container.data.fields.hostId == current.labels['io.rancher.service.requested.host.id'])
+        .length;
+%>
+
+upstream <%= upstream %> {
+<% containers.forEach((container) => { %>
+    # Rancher container: <%= container.id %>
+    # Docker container id: <%= container.externalId %>
+    # Docker image: <%= container.data && container.data.dockerContainer ? container.data.dockerContainer.Image : 'N/A' %>
+    server <%=
+        container.primaryIpAddress
+            || 'host-unreachable'
+    %>:<%=
+        container.labels[label]
+    %><%=
+        container.data && container.data.dockerContainer && container.data.dockerContainer.State == 'running'
+            ? ''
+            : ' down';
+    %><%=
+        localUpstreamCount > 0
+        && container.data
+        && container.data.fields
+        && container.data.fields.hostId
+        && current.labels['io.rancher.service.requested.host.id']
+        && container.data.fields.hostId != current.labels['io.rancher.service.requested.host.id']
+            ? ' backup'
+            : '';
+    %>;
+<% }); %>
+}

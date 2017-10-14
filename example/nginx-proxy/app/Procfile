@@ -1,0 +1,2 @@
+nginx: nginx -g 'daemon off;'
+ranchergen: node /app/rancher-gen/dist/main.js /app/config.js
