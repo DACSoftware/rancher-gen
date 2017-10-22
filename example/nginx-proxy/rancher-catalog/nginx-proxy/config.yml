@@ -1,0 +1,6 @@
+name: Nginx proxy
+description: |
+  Nginx proxy
+version: 1.0
+category: Apps
+maintainer: Wiktor Latanowicz

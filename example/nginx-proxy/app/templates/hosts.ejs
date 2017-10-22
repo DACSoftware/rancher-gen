@@ -1,0 +1,13 @@
+<%
+  const label = 'com.latanowicz.proxy.' + protocol;
+  containers
+    .filter((c) => !!c.labels[label])        //extract containers with vhost labels
+    .map((c) => c.labels[label].split(','))  //extract vhost names
+    .reduce((vhosts, a) => a.concat(vhosts), [])   //flatten array
+    .map((vhost) => vhost.split('@')[0])
+    .filter((v, i, a) => a.indexOf(v) === i)       //only unique values
+    .forEach((vhost) => { %>
+
+    <%- include('protocols/' + protocol + '.ejs', {containers: containers, vhost: vhost, label: label, current: current}); %>
+
+<% }); %>

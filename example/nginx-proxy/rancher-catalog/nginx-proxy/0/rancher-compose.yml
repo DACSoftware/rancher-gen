@@ -1,0 +1,20 @@
+version: '2'
+catalog:
+  name: "Nginx Proxy"
+  version: "v1.0.0"
+  questions:
+    - variable: "RANCHER_URL"
+      label: "Rancher API URL"
+      required: true
+      type: "string"
+    - variable: "RANCHER_ACCESS_KEY"
+      label: "Rancher API Access Key"
+      required: true
+      type: "string"
+    - variable: "RANCHER_SECRET_KEY"
+      label: "Rancher API Secret Key"
+      required: true
+      type: "string"
+    - variable: "RANCHER_ENV_ID"
+      label: "Rancher Environemnt ID"
+      type: "string"

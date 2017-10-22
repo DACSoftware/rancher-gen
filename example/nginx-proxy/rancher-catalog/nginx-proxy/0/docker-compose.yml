@@ -1,0 +1,14 @@
+version: '2'
+services:
+  nginx-proxy:
+    image: wlatanowicz/nginx-proxy:v1.2.0
+    ports:
+      - "80:80"
+    environment:
+      - RANCHER_URL=$RANCHER_URL
+      - RANCHER_ACCESS_KEY=$RANCHER_ACCESS_KEY
+      - RANCHER_SECRET_KEY=$RANCHER_SECRET_KEY
+      - RANCHER_ENV_ID=$RANCHER_ENV_ID
+    labels:
+      io.rancher.container.create_agent: true
+      io.rancher.container.agent.role: environment
