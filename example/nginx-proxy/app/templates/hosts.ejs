@@ -6,8 +6,13 @@
     .reduce((vhosts, a) => a.concat(vhosts), [])   //flatten array
     .map((vhost) => vhost.split('@')[0])
     .filter((v, i, a) => a.indexOf(v) === i)       //only unique values
-    .forEach((vhost) => { %>
+    .forEach((vhost) => {
 
-    <%- include('protocols/' + protocol + '.ejs', {containers: containers, vhost: vhost, label: label, current: current}); %>
+      const filteredContainers = containers
+      .filter((container) => !!container.labels[label])
+      .filter((container) => container.labels[label].split(',').map((v) => v.split('@')[0]).indexOf(vhost) >= 0);
+%>
+
+    <%- include('protocols/' + protocol + '.ejs', {containers: filteredContainers, vhost: vhost, label: label, current: current}); %>
 
 <% }); %>
