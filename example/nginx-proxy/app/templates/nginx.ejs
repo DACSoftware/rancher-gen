@@ -1,3 +1,4 @@
 <%- include('headers.ejs'); %>
 <%- include('default_503.ejs'); %>
-<%- include('hosts.ejs'); %>
+
+<%- include('hosts.ejs', {protocol: 'http'}); %>

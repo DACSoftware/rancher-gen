@@ -14,11 +14,14 @@ upstream <%= upstream %> {
     # Rancher container: <%= container.id %>
     # Docker container id: <%= container.externalId %>
     # Docker image: <%= container.data && container.data.dockerContainer ? container.data.dockerContainer.Image : 'N/A' %>
+    # <%= label %>: <%= container.labels[label] %>
     server <%=
         container.primaryIpAddress
             || 'host-unreachable'
     %>:<%=
-        container.labels[label]
+        container.labels[label].split('@').length > 1 && container.labels[label].split('@')[1].length > 0
+            ? container.labels[label].split('@')[1]
+            : defaultPort
     %><%=
         container.data && container.data.dockerContainer && container.data.dockerContainer.State == 'running'
             ? ''

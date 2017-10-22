@@ -1,0 +1,29 @@
+<%
+const upstream = 'http-' + vhost;
+const defaultPort = 80;
+const filteredContainers = containers
+        .filter((container) => !!container.labels[label])
+        .filter((container) => container.labels[label].split(',').map((v) => v.split('@')[0]).indexOf(vhost) >= 0);
+
+if (filteredContainers.length > 0) { %>
+
+<%- include('../upstream.ejs', {containers: filteredContainers, vhost: vhost, label: label, upstream: upstream, current: current, defaultPort: defaultPort}); %>
+
+server {
+    server_name <%= vhost %>;
+    listen 80;
+    access_log /var/log/nginx/access-http.log vhost;
+
+    location / {
+        proxy_pass http://<%= upstream %>;
+        proxy_connect_timeout 300;
+        proxy_send_timeout 300;
+        proxy_read_timeout 600;
+    }
+}
+
+<% } else { %>
+
+# no containers for HTTP at vhost <%= vhost %>
+
+<% } %>
