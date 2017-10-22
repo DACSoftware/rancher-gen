@@ -1,5 +1,5 @@
 <%
-const upstream = 'http-' + vhost;
+const upstream = 'websocket-' + vhost;
 const defaultPort = 80;
 
 if (containers.length > 0) { %>
@@ -9,18 +9,18 @@ if (containers.length > 0) { %>
 server {
     server_name <%= vhost %>;
     listen 80;
-    access_log /var/log/nginx/access-http.log vhost;
+    access_log /var/log/nginx/access-websocket.log vhost;
 
     location / {
         proxy_pass http://<%= upstream %>;
-        proxy_connect_timeout 300;
-        proxy_send_timeout 300;
-        proxy_read_timeout 600;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
     }
 }
 
 <% } else { %>
 
-# no containers for HTTP at vhost <%= vhost %>
+# no containers for WebSocket at vhost <%= vhost %>
 
 <% } %>
